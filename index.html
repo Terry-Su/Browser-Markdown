@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="./css/markdown.css">
+	<link rel="stylesheet" href="./css/highlight.css">
+
+	<script src="./js/highlight.js"></script>
+	<script src="./js/showdown.js"></script>
+	<script src="./js/jquery.js"></script>
+</head>
+<style>
+	html,body {
+		margin:0;padding:0;
+		width: 100%; height: 100%; 
+	}
+
+	#markdownContent{
+		float: left;
+		width: 48%; height: 100%;
+		padding: 15px;
+		resize: none; border: none;
+		font-size:16px; text-indent: 1px;
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"
+	}
+	#markdownDisplay{
+		float: right;
+		width:48%; height: 100%; overflow: scroll;
+		padding: 1px;
+	}
+</style>
+
+<body>
+	<textarea id="markdownContent" placeholder="Input Here..."></textarea>		
+	<div id="markdownDisplay"></div>
+
+
+	<script>
+		var $markdownContent = $('#markdownContent')
+		var $markdownDisplay = $('#markdownDisplay')
+
+	/*
+	 * render html by markdownText
+	 */
+	 var render = function($container ,markdownText) {
+		// create markdown to html converter
+		var converter = new showdown.Converter({
+			tables: true,
+			tasklists: true
+		})
+
+		var html = converter.makeHtml(markdownText)
+
+		$markdownDisplay.html(html)
+	}
+	
+	/*
+	 * format the text to markdown text
+	 */
+	 var formatMarkdownText = function (text) {
+		return text.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '') // trim
+					.replace(/\<\/div\>\<div\>/g, '\n')	// enter
+					.replace(/(\<br\>)|(\<br \/\>)/g, '')	// enter
+					.replace(/\<span.+?\<\/span\>/g,' ')
+					.replace(/(\<div\>)|(\<\/div\>)/g, '')	// remove <div> </div> 
+				}
+
+	/*
+	 * format the text to markdown text
+	 */
+	 var update = function () {
+	 	var markdownText = formatMarkdownText($markdownContent.val())								
+
+	 	render($markdownDisplay, markdownText)
+
+		// highlight codes area
+		$('pre code').each(function(i, block) {
+			hljs.highlightBlock(block);
+		})
+
+		
+
+	}
+
+	
+
+
+	// run
+	
+	update()
+
+
+	// add textarea interaction
+	$markdownContent.bind('input propertychange', function () {
+		update()
+	})
+	
+
+</script>
+</body>
+</html>
